@@ -23,7 +23,7 @@ Each Processing Element:
 
 ## Resource Utilization
 - PEs: N²
-- FIFOs: O(N) for input buffering (not shown in basic version)
+- FIFOs: O(N) for input buffering (basic version shown)
 - Control logic: Minimal (mainly handshake signals)
 
 ## Performance Metrics
@@ -40,3 +40,5 @@ Each Processing Element:
 3. Add accumulation precision scaling
 4. Integrate with on-chip memory hierarchy
 5. Add systolic array for convolution (im2col transformation)
+6. Implement AXI-Lite slave interface
+7. Add performance counters and profiling

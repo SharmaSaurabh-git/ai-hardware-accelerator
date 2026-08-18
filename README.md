@@ -1,5 +1,10 @@
 # AI Hardware Accelerator: Configurable Systolic Array for Matrix Multiplication
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![HDL: SystemVerilog](https://img.shields.io/badge/HDL-SystemVerilog-blue.svg)](https://en.wikipedia.org/wiki/SystemVerilog)
+[![Simulator: Verilator](https://img.shields.io/badge/Simulator-Verilator-green.svg)](https://verilator.org/)
+[![GitHub Stars](https://img.shields.io/github/stars/SharmaSaurabh-git/ai-hardware-accelerator?style=social)](https://github.com/SharmaSaurabh-git/ai-hardware-accelerator/stargazers)
+
 A parameterizable systolic array implementation for high-throughput matrix multiplication, optimized for AI/ML workloads (CNNs, Transformers). This project demonstrates VLSI design skills targeting the fastest-growing segment in semiconductor industry: AI accelerators.
 
 ## Features
@@ -36,19 +41,35 @@ ai-hardware-accelerator/
 ├── scripts/             # Simulation and analysis scripts
 ├── doc/                 # Documentation
 ├── constraints/         # FPGA constraints (Xilinx/Intel)
+├── sim/                 # Simulation outputs
 └── README.md
 ```
 
 ## Getting Started
 1. Clone repository: `git clone https://github.com/SharmaSaurabh-git/ai-hardware-accelerator.git`
-2. Simulate: `make sim` (requires Verilator or similar)
-3. Synthesize: Use Vivado/Quartus with constraints in `constraints/`
+2. Install Verilator: `sudo apt-get install verilator` (or use your preferred simulator)
+3. Simulate: `make sim`
+4. View waveform: `gtkwave systolic_array.vcd`
 
 ## Performance Metrics
 - Peak throughput: N² operations/cycle (ideal)
 - Utilization: >95% for large matrices
 - Latency: 2N + M - 2 cycles for NxN * NxM
 - Area: O(N²) processing elements + O(N) buffers
+
+## Example Usage
+See `tb/tb_systolic_array.sv` for a complete testbench demonstrating:
+- Matrix multiplication verification
+- Clock and reset sequencing
+- Input/output timing
+- Result validation
+
+## Future Enhancements
+- Fixed-point support for quantized neural networks
+- Sparsity optimization for efficient computation
+- Integration with on-chip memory hierarchy
+- AXI-Lite interface for SoC integration
+- DSP block utilization reporting for FPGA targets
 
 ## License
 MIT
