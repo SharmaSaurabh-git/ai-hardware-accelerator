@@ -17,6 +17,8 @@ A parameterizable systolic array implementation for high-throughput matrix multi
 - Performance analysis scripts
 - FPGA implementation constraints (optional)
 - SVA-based assertions for verification
+- **Fixed-point support** (via input/output scaling)
+- **Convolution capabilities** (via im2col transformation - see documentation)
 
 ## Target Applications
 - Convolutional Neural Networks (CNNs)
@@ -41,7 +43,6 @@ ai-hardware-accelerator/
 ├── scripts/             # Simulation and analysis scripts
 ├── doc/                 # Documentation
 ├── constraints/         # FPGA constraints (Xilinx/Intel)
-├── sim/                 # Simulation outputs
 └── README.md
 ```
 
@@ -57,6 +58,31 @@ ai-hardware-accelerator/
 - Latency: 2N + M - 2 cycles for NxN * NxM
 - Area: O(N²) processing elements + O(N) buffers
 
+## Fixed-Point Support
+The systolic array uses integer arithmetic, but can be used for fixed-point numbers by appropriate scaling:
+1. Represent your fixed-point numbers as integers by scaling: `integer_value = round(float_value * (2^frac_bits))`
+2. Choose your integer and fractional bits such that the maximum expected value does not overflow.
+3. After multiplication, the result will be scaled by 2^(2*frac_bits). You will need to right-shift by 2*frac_bits to get the correct fixed-point result.
+4. For accumulation of N products, you may need to right-shift by an additional log2(N) bits to avoid overflow, or use a wider accumulator.
+
+Example for Q4.4 format (4 integer, 4 fractional bits, total 8 bits):
+   - Input range: [-8, 7.9375] (if signed)
+   - Multiply two Q4.4 numbers: result is Q8.8 (16 bits)
+   - Accumulate N products: you need extra log2(N) bits in the integer part to avoid overflow.
+   - After accumulation, right-shift by (2*frac_bits + log2(N)) to get back to Q4.4.
+
+See `doc/fixed_point_guide.md` for detailed examples.
+
+## Convolution Capabilities
+2D convolution can be performed using the systolic array by:
+1. Convolution via im2col: Convert the 2D convolution into a matrix multiplication problem.
+2. The im2col transformation rearranges the input feature map into columns where each column is a flattened patch.
+3. The kernel is rearranged into rows where each row is a flattened kernel.
+4. Then, convolution becomes: output = im2col_matrix * kernel_matrix^T
+5. This matrix multiplication can be computed using our systolic array.
+
+See `doc/convolution_guide.md` for detailed examples and hardware considerations.
+
 ## Example Usage
 See `tb/tb_systolic_array.sv` for a complete testbench demonstrating:
 - Matrix multiplication verification
@@ -65,11 +91,12 @@ See `tb/tb_systolic_array.sv` for a complete testbench demonstrating:
 - Result validation
 
 ## Future Enhancements
-- Fixed-point support for quantized neural networks
+- Fixed-point hardware support (to avoid external scaling)
 - Sparsity optimization for efficient computation
 - Integration with on-chip memory hierarchy
 - AXI-Lite interface for SoC integration
 - DSP block utilization reporting for FPGA targets
+- Direct hardware support for im2col transformation
 
 ## License
 MIT
